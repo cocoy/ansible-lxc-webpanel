@@ -1,0 +1,19 @@
+---
+- name: add python properties 
+  apt: name=python-software-properties state=installed
+
+- name: add LXC_WebPanel gpg key
+  apt_key: url=http://claudyus.github.io/LXC-Web-Panel/claudyus.gpg.key  state=present
+
+- apt_repository: repo='deb http://claudyus.github.io/LXC-Web-Panel/ debian/'  state=present
+
+- apt: update_cache=yes 
+
+- apt: name=lwp state=installed  force=yes
+
+- name: Configure lwp.conf 
+  template:
+    src: lwp.conf.j2
+    dest: /etc/lwp/lwp.conf 
+  notify: restart lwp 
+
