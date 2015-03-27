@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: Rodney Quillo 
+  description: An Ansible role for installing LXC-Web-Panel.
+  license: GPL 
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+  categories:
+  - system

@@ -1,0 +1,6 @@
+---
+- name: restart lwp 
+  service:
+    name: lwp
+    state: restarted
+    enabled: yes
