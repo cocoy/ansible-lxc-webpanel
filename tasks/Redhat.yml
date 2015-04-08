@@ -1,0 +1,83 @@
+---
+ - name: Install EPEL repo.
+   command: "yum install -y epel-release"
+
+ - name: Add lwp group
+   group: name=lwp state=present
+
+ - name: create lwp user
+   user: name=lwp comment="lxc webpanel" uid=1000 group=lwp
+
+ - name: install required lxc packages 
+   yum: name={{ item }}  state=present
+   with_items:
+       - "lxc"
+       - "lxc-devel" 
+       - "lxc-libs" 
+       - "lxc-templates" 
+       - "bridge-utils"
+       - "libcgroup"
+       - "npm" 
+       - "git" 
+       #- "python-pam" 
+       - "python-pip"
+       - "python-devel"
+       # equiv of build-essential
+       - "libxml2" 
+       - "libxml2-devel" 
+       - "libxslt" 
+       - "libxslt-devel"
+       # needed on pip below
+       - "fabric"
+       - "python-virtualenv"
+       - "openldap-devel"
+       - "libffi-devel"
+       - "python-ldap"
+
+ - name: git clone lxc-web-panel 
+   git: repo=https://github.com/claudyus/LXC-Web-Panel.git
+       dest=/opt/lwp_checkout
+       version=master
+
+ - name: create venv dir  
+   pip: name={{ item }} state=present  virtualenv=/opt/lwp_checkout/venv
+   with_items:
+       - "pycrypto"
+       - "paramiko==1.10"
+       - "flask"
+       - "pytz" 
+
+ - name: change /opt/lwp_checkout ownership 
+   file: path=/opt/lwp_checkout owner=lwp group=lwp  recurse=yes
+
+ - name: build assets using fabric 
+   shell: chdir=/opt/lwp_checkout fab build_assets
+   sudo_user: lwp 
+
+ - name: compile lwp using venv
+   shell: chdir=/opt/lwp_checkout/ ./venv/bin/python setup.py develop
+   sudo_user: lwp 
+
+
+ 
+ - name: create /etc/lwp 
+   file: path=/etc/lwp state=directory 
+
+ - name: create /var/lwp 
+   file: path=/var/lwp state=directory 
+
+ - name: copy conf to /etc/lwp 
+   command: chdir=/opt/lwp_checkout/ cp lwp.example.conf /etc/lwp 
+
+ - name: copy db to /var/lwp 
+   command: chdir=/opt/lwp_checkout/ cp lwp.db /var/lwp/
+
+ - name: make sure lxc is started 
+   service: name=lxc  state=started 
+
+ - name: copy init script to /etc/init.d
+   copy: src=lwp.sh dest=/etc/init.d/lwp mode=755 
+
+ - name: start lwp 
+   service: name=lwp state=started 
+
