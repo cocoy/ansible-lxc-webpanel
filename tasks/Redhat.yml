@@ -66,11 +66,11 @@
  - name: create /var/lwp 
    file: path=/var/lwp state=directory 
 
-- name: Configure lwp.conf 
-  template:
+ - name: Configure lwp.conf 
+   template:
     src: lwp.conf.j2
     dest: /etc/lwp/lwp.conf 
-  notify: restart lwp 
+   notify: restart lwp 
 
 
  - name: copy db to /var/lwp 
