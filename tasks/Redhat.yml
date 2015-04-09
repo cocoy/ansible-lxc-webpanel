@@ -66,8 +66,12 @@
  - name: create /var/lwp 
    file: path=/var/lwp state=directory 
 
- - name: copy conf to /etc/lwp 
-   command: chdir=/opt/lwp_checkout/ cp lwp.example.conf /etc/lwp 
+- name: Configure lwp.conf 
+  template:
+    src: lwp.conf.j2
+    dest: /etc/lwp/lwp.conf 
+  notify: restart lwp 
+
 
  - name: copy db to /var/lwp 
    command: chdir=/opt/lwp_checkout/ cp lwp.db /var/lwp/
