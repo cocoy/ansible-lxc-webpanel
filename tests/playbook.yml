@@ -1,0 +1,10 @@
+---
+- hosts: all
+  sudo: True
+
+  vars:
+    - lwp_bind: 0.0.0.0  
+    - lwp_port: 5000
+     
+  roles:
+    - ansible-lxc-webpanel
