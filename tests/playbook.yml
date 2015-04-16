@@ -7,4 +7,4 @@
     - lwp_port: 5000
      
   roles:
-    - ansible-lxc-webpanel
+    - cocoy.ansible-lxc-webpanel
